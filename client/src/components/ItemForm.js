@@ -79,13 +79,7 @@ class ItemForm extends React.Component {
           value={name}
           onChange={this.handleChange}
         />
-        <Form.Input
-          label="Description"
-          placeholder="Description"
-          name="description"
-          value={description}
-          onChange={this.handleChange}
-          />
+        
            <Form.Input
           label="image"
           placeholder="Image"
@@ -100,9 +94,17 @@ class ItemForm extends React.Component {
           value={likes}
           onChange={this.handleChange}
           />
+          </Form.Group>
+          <Form.TextArea
+          label="Description"
+          placeholder="Description"
+          name="description"
+          value={description}
+          onChange={this.handleChange}
+          />
           <br/>
         <Form.Button type="submit">Submit</Form.Button>
-      </Form.Group>
+      
     </Form>
     </Modal.Content>
     </>
