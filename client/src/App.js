@@ -1,52 +1,56 @@
 import React from 'react';
 import './App.css';
-import { Card, Image, Icon, Container, } from "semantic-ui-react";
+import { Card, Image, Icon, Container, Button, Modal} from "semantic-ui-react";
 import axios from 'axios';
 import styled from 'styled-components';
-import ItemForm from './ItemForm.js';
+import ItemForm from './components/ItemForm.js';
 
 class App extends React.Component {
-  state = { items: []}
+  state = { items: [], likes: [], newForm: false}
 
-  componentDidMount() {
-    axios.get('/api/items')
-      .then( (res) => {
-        this.setState({ items: res.data, })
-      })
-      .catch( (err) => {
-        console.log(err)
-      })
-  }
-  addItem = (itemName, itemImage, itemDescription, itemLikes) => {
-    axios
-    .post('/api/items', { 
-      name: itemName,
-      image: itemImage,
-      description: itemDescription,
-      likes: itemLikes, 
-    })
-    .then( (res) => {
-      this.setState({
-        items: [
-          { ...res.data, item_id: res.data.id, items: [] },
-          ...this.state.items
-        ]
-      });
-    })
-    .catch(e => {
-      console.log(e);
+  componentDidMount(){
+    this.getItems()
+  };
+
+  getItems = async() => {
+    const res = await axios.get(`/api/items/`);
+    this.setState({
+      items: res.data
     });
+}
+
+toggleForm = () => {
+  this.setState({
+     newForm: !this.state.newForm
+  });
 };
+
+sortAscending = () => {
+  const { items, likes } = this.state;
+  likes.sort((a, b) => a - b)    
+  this.setState({ likes })
+}
+
+sortDescending = () => {
+  const { items, likes } = this.state;
+  likes.sort((a, b) => a - b).reverse()
+  this.setState({ likes })
+}
 
 render(){
   const { items, } = this.state
         return (
           <AppContainer>
-            <Container>
+            <Container >
    <br/>
     <h1 style={styles.Header}>Lonely Hearts Club</h1>
           <br />
-          
+          <div align="right">
+          <p>Filter by</p>
+         <button onClick={this.sortAscending}>Most Likes</button>
+        <button onClick={this.sortDescending}>Least Likes</button>
+          </div>
+          <br/>
       <Card.Group itemsPerRow={4}>
         { items.map( item =>
           <Card key={item.id} style={styles.cardPosition}>
@@ -65,8 +69,14 @@ render(){
           </Card>
         )}
       </Card.Group>
-      <ItemForm/>
-      
+      <br/>
+      <div align="center">
+      <Button onClick={this.toggleForm}>New Profile</Button>
+        <Modal open={this.state.newForm} close={this.toggleForm}>
+          <ItemForm toggleForm={this.toggleForm} />
+          </Modal>
+      </div>
+      <br/>
       </Container>
       </AppContainer>
     )
